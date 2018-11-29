@@ -1,34 +1,52 @@
-/*
-  AnalogReadSerial
+typedef enum {  NOITE,DIA } S;
 
-  Reads an analog input on pin 0, prints the result to the Serial Monitor.
-  Graphical representation is available using Serial Plotter (Tools > Serial Plotter menu).
-  Attach the center pin of a potentiometer to pin A0, and the outside pins to +5V and ground.
+S estadoAtual;
+int entradaAtual;
+int saida;
 
-  This example code is in the public domain.
+int cSensibilidade = 750;
 
-  http://www.arduino.cc/en/Tutorial/AnalogReadSerial
-*/
-
-// the setup routine runs once when you press reset:
 void setup() {
-  // initialize serial communication at 9600 bits per second:
+  // Inicia serial à 9600bps
   Serial.begin(9600);
+
+  //Inicia estado atual como NOITE (S0)
+  estadoAtual = NOITE;
+
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
-// the loop routine runs over and over again forever:
 void loop() {
-  // read the input on analog pin 0:
-  int sensorValue = analogRead(A0);
-  // print out the value you read:
-//  Serial.println(sensorValue);
+  //Recebe entradaAtual da leitura analogica do sensor LDR
+  entradaAtual = analogRead(A0);
 
+  //atualizamos o novo estado com fs
+  estadoAtual = fs(estadoAtual, entradaAtual);
+
+  //pegamos a saida com fo
+  saida = fo(estadoAtual);
+
+  //enviamos a saida na serial
+  Serial.print(saida);
+  digitalWrite(LED_BUILTIN, saida);
   
+  delay(10); // delay pra estabilidade
+}
 
-  if(sensorValue<600){
-    Serial.print(0);
+S fs(S estado, int entrada) {
+  if(entrada<cSensibilidade){
+    return DIA;
   } else {
-    Serial.print(1);
+    return NOITE;
   }
-  delay(10);        // delay in between reads for stability
+}
+
+int fo(S estado){
+  if(estado==NOITE) {
+    return 1;
+  }
+
+  if(estado==DIA) {
+    return 0;
+  }
 }
