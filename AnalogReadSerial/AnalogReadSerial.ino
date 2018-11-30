@@ -4,7 +4,7 @@ S estadoAtual;
 int entradaAtual;
 int saida;
 
-int cSensibilidade = 750;
+int cSensibilidade = 850;
 
 void setup() {
   // Inicia serial à 9600bps
